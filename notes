@@ -1,0 +1,22 @@
+from bs4 import BeautifulSoup
+import json
+
+def html_table_to_json(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    table = soup.find('table')  # Find the table element
+    
+    headers = []
+    rows = []
+    
+    # Extract table headers
+    for th in table.find_all('th'):
+        headers.append(th.text.strip())
+    
+    # Extract table rows and cells
+    for tr in table.find_all('tr'):
+        row = {}
+        for index, td in enumerate(tr.find_all('td')):
+            row[headers[index]] = td.text.strip()
+        rows.append(row)
+    
+    return json.dumps(rows)
