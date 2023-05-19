@@ -20,3 +20,27 @@ def html_table_to_json(html):
         rows.append(row)
     
     return json.dumps(rows)
+    
+    
+    function displayBotResponse(response) {
+    var messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container');
+    var botMessage = document.createElement('div');
+    botMessage.classList.add('bot-message');
+    messageContainer.appendChild(botMessage);
+    $('#chatbox').append(messageContainer);
+    
+    if (response.startsWith("<html>") && response.endsWith("</html>")) {
+        // If the response is HTML code, create an iframe to render it
+        var iframe = document.createElement('iframe');
+        iframe.srcdoc = response;
+        iframe.style.width = '100%';
+        iframe.style.height = '300px'; // Set the desired height
+        botMessage.appendChild(iframe);
+    } else {
+        // Otherwise, treat it as plain text and apply the typewriter animation
+        typeMessage('Bot: ', botMessage, function() {
+            typeMessage(response, botMessage);
+        });
+    }
+}
