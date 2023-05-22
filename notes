@@ -1,3 +1,33 @@
+
+# Load the Word document
+doc = docx.Document("input.docx")
+
+# Extract the content from the document
+content = ""
+for paragraph in doc.paragraphs:
+    content += paragraph.text + "\n"
+
+# Summarize the content
+summary = summarize_text(content)
+
+# Find the specific location where you want to insert the summary
+# Update this with the logic to locate the specific location in the document
+
+# Insert the summary at the specific location
+specific_location = "Specific Location"  # Update with your specific location
+for paragraph in doc.paragraphs:
+    if specific_location in paragraph.text:
+        paragraph.insert_paragraph_before(summary)
+        break
+
+# Save the modified document as a copy
+doc.save("output.docx")
+
+
+
+
+
+
 from bs4 import BeautifulSoup
 import json
 
