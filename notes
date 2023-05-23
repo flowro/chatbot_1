@@ -1,4 +1,25 @@
 
+import rsconnect
+
+# Create a deployment options object
+options = rsconnect.DeploymentOptions()
+
+# Set the name of the server
+options.server = "https://example.com"
+
+# Set the title of the app
+options.app_title = "My Awesome App"
+
+# Set the API key
+options.api_key = "your_api_key"
+
+# Add extra files to the deployment
+options.extra_files = ["path/to/file1.txt", "path/to/file2.csv"]
+
+# Deploy the application
+rsconnect.deployApp(app_directory="path/to/app", deployment_options=options)
+
+
 
 import datetime
 
