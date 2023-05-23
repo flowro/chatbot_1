@@ -1,118 +1,143 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Conversational Bot</title>
-        <style>
-            /* Chatbox styles */
-            #chatbox-container {
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-                height: 80vh; /* Adjust the height as needed */
-                padding: 10px;
-            }
+<head>
+    <title>Conversational Bot</title>
+    <style>
+        /* Chatbox styles */
+        #chatbox-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 80vh; /* Adjust the height as needed */
+            padding: 10px;
+        }
 
-            .message-container {
-                margin-bottom: 10px;
-            }
+        .message-container {
+            margin-bottom: 10px;
+        }
 
-            .user-message {
-                background-color: #e2f0ff;
-                padding: 10px;
-                border-radius: 10px;
-            }
+        .user-message {
+            background-color: #e2f0ff;
+            padding: 10px;
+            border-radius: 10px;
+        }
 
-            .bot-message {
-                background-color: #f0f0f0;
-                padding: 10px;
-                border-radius: 10px;
-                overflow-wrap: break-word;
-            }
+        .bot-message {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 10px;
+            overflow-wrap: break-word;
+        }
 
-            /* Input box styles */
-            #inputbox-container {
-                margin-top: 10px; /* Add margin to separate from chatbox */
-                background-color: #f0f0f0;
-                padding: 10px;
-            }
+        /* Input box styles */
+        #inputbox-container {
+            margin-top: 10px; /* Add margin to separate from chatbox */
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
 
-            #inputbox {
-                width: 100%;
-                padding: 8px;
-                border-radius: 5px;
-                border: none;
-            }
-        </style>
-        <meta charset="UTF-8">
-    </head>
-    <body>
-        <div id="chatbox-container">
-            <div id="chatbox">
-                <!-- Chat messages will go here -->
-            </div>
+        #inputbox {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        /* Loading animation styles */
+        .typing-dots {
+            display: inline-block;
+            animation: blink-animation 1s infinite;
+        }
+
+        @keyframes blink-animation {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="chatbox-container">
+        <div id="chatbox">
+            <!-- Chat messages will go here -->
         </div>
-        <div id="inputbox-container">
-            <input type="text" id="inputbox" placeholder="Type your question...">
-        </div>
+    </div>
+    <div id="inputbox-container">
+        <input type="text" id="inputbox" placeholder="Type your question...">
+    </div>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script>
-            var typingSpeed = 50; // ms between characters
-            var isTyping = false;
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        var typingSpeed = 50; // ms between characters
+        var isTyping = false;
 
-            function typeMessage(message, element, callback) {
-                isTyping = true;
-                var i = 0;
-                var interval = setInterval(function() {
-                    element.textContent += message[i];
-                    i++;
-                    if (i >= message.length) {
-                        clearInterval(interval);
-                        isTyping = false;
-                        if (callback) callback();
-                    }
-                }, typingSpeed);
-            }
+        function typeMessage(message, element, callback) {
+            isTyping = true;
+            var i = 0;
+            var interval = setInterval(function() {
+                element.textContent += message[i];
+                i++;
+                if (i >= message.length) {
+                    clearInterval(interval);
+                    isTyping = false;
+                    if (callback) callback();
+                }
+            }, typingSpeed);
+        }
 
-            function displayUserMessage(message) {
-                var messageContainer = document.createElement('div');
-                messageContainer.classList.add('message-container');
-                var userMessage = document.createElement('div');
-                userMessage.classList.add('user-message');
-                userMessage.textContent = 'You: ' + message;
-                messageContainer.appendChild(userMessage);
-                $('#chatbox').append(messageContainer);
-            }
+        function displayUserMessage(message) {
+            var messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+            var userMessage = document.createElement('div');
+            userMessage.classList.add('user-message');
+            userMessage.textContent = 'You: ' + message;
+            messageContainer.appendChild(userMessage);
+            $('#chatbox').append(messageContainer);
+        }
 
-            function displayBotResponse(response) {
-                var messageContainer = document.createElement('div');
-                messageContainer.classList.add('message-container');
-                var botMessage = document.createElement('div');
-                botMessage.classList.add('bot-message');
-                messageContainer.appendChild(botMessage);
-                $('#chatbox').append(messageContainer);
-                typeMessage('Bot: ', botMessage, function() {
+        function displayBotResponse(response) {
+            var messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+            var botMessage = document.createElement('div');
+            botMessage.classList.add('bot-message');
+            messageContainer.appendChild(botMessage);
+            $('#chatbox').append(messageContainer);
+
+            var typingDots = document.createElement('span');
+            typingDots.classList.add('typing-dots');
+            typingDots.textContent = '...';
+
+            typeMessage('Bot: ', botMessage, function() {
+                botMessage.appendChild(typingDots);
+                setTimeout(function() {
+                    botMessage.removeChild(typingDots);
                     typeMessage(response, botMessage);
+                }, 1000);
+            });
+        }
+
+        $('#inputbox').on('keypress', function(e) {
+            if (e.which == 13 && !isTyping) {  // enter key
+                var question = $('#inputbox').val();
+                displayUserMessage(question);
+                $('#inputbox').val('');
+
+                $.ajax({
+                    url: '/ask',
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "question": question }),
+                    beforeSend: function() {
+                        displayBotResponse(''); // Display the loading animation
+                    },
+                    success: function(data) {
+                        $('.typing-dots').remove(); // Remove the loading animation
+                        displayBotResponse(data.answer);
+                    },
                 });
             }
-
-            $('#inputbox').on('keypress', function(e) {
-                if (e.which == 13 && !isTyping) {  // enter key
-                    var question = $('#inputbox').val();
-                    displayUserMessage(question);
-                    $('#inputbox').val('');
-
-                    $.ajax({
-                        url: '/ask',
-                        type: 'post',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ "question": question }),
-                        success: function(data) {
-                            displayBotResponse(data.answer);
-                        },
-                    });
-                }
-            });
-        </script>
-    </body>
+        });
+    </script>
+</body>
 </html>
