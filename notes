@@ -1,4 +1,23 @@
 
+
+import datetime
+
+def get_previous_month():
+    # Get the current date
+    current_date = datetime.datetime.now()
+
+    # Calculate the previous month
+    if current_date.month == 1:
+        previous_month = 12
+    else:
+        previous_month = current_date.month - 1
+
+    # Format the previous month as a string with leading zero if necessary
+    previous_month_str = str(previous_month).zfill(2)
+
+    return previous_month_str
+
+
 # Load the Word document
 doc = docx.Document("input.docx")
 
