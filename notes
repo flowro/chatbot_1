@@ -1,3 +1,30 @@
+
+import os
+import re
+
+def scan_for_passwords(directory):
+    password_regex = re.compile(r'(?i)password\s*=\s*[\'"][^\'"]*[\'"]')
+
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            try:
+                with open(file_path, 'r') as f:
+                    contents = f.read()
+
+                if password_regex.search(contents):
+                    print(f'Possible password found in: {file_path}')
+            except Exception as e:
+                # Skip files we can't open, they might be binary or a system file.
+                print(f'Skipped file {file_path} due to error: {e}')
+
+scan_for_passwords('<your_directory_here>')
+
+
+
+
+
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.0/en_core_web_sm-3.4.0-py3-none-any.whl
 
 import rsconnect
