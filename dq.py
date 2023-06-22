@@ -1,11 +1,11 @@
 import pandas as pd
 
-def check_data_quality(excel_file):
+def check_data_quality(input_excel_file, output_excel_file):
     # Read the Excel file
-    xls = pd.read_excel(excel_file, sheet_name=None)
+    xls = pd.read_excel(input_excel_file, sheet_name=None)
 
-    # Create a dictionary to store all the issues
-    all_issues = {}
+    # Create an ExcelWriter object to write issues to
+    writer = pd.ExcelWriter(output_excel_file, engine='openpyxl')
 
     # Loop through each sheet in the Excel file
     for sheet_name, df in xls.items():
@@ -33,11 +33,12 @@ def check_data_quality(excel_file):
                     incorrect_types[column] = f'Non-numeric entries: {non_numeric}'
         issues['Incorrect types'] = incorrect_types
 
-        # Store the issues for this sheet
-        all_issues[sheet_name] = issues
+        # Convert the issues to a DataFrame and write it to the Excel file
+        issues_df = pd.DataFrame.from_dict(issues, orient='index')
+        issues_df.to_excel(writer, sheet_name=sheet_name)
 
-    # Return the issues
-    return all_issues
+    # Save the Excel file
+    writer.save()
 
 # Usage
 issues = check_data_quality('your_file.xlsx')
