@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 
-def check_data_quality(input_excel_file):
+def check_data_quality(input_excel_file, output_excel_file):
     # Read the Excel file
     xls = pd.read_excel(input_excel_file, sheet_name=None)
 
@@ -40,5 +40,8 @@ def check_data_quality(input_excel_file):
     summary = issue_data.groupby(['Sheet', 'Column', 'Issue Type'])['Count'].sum().to_string()
     print(summary)
 
+    # Write the issue data to the Excel file
+    issue_data.to_excel(output_excel_file, index=False)
+
 # Usage
-check_data_quality('input_file.xlsx')
+check_data_quality('input_file.xlsx', 'output_file.xlsx')
