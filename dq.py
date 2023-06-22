@@ -33,9 +33,14 @@ def check_data_quality(input_excel_file, output_excel_file):
                     incorrect_types[column] = f'Non-numeric entries: {non_numeric}'
         issues['Incorrect types'] = incorrect_types
 
-        # Convert the issues to a DataFrame and write it to the Excel file
-        issues_df = pd.DataFrame.from_dict(issues, orient='index')
-        issues_df.to_excel(writer, sheet_name=sheet_name)
+        # Write each issue to the Excel file
+        if not missing_values.empty:
+            missing_values.to_excel(writer, sheet_name=f'{sheet_name} - Missing Values')
+        if duplicates.sum() > 0:
+            duplicates.to_excel(writer, sheet_name=f'{sheet_name} - Duplicates')
+        if not incorrect_types.empty:
+            incorrect_types.to_frame().to_excel(writer, sheet_name=f'{sheet_name} - Incorrect Types')
+
 
     # Save the Excel file
     writer.save()
