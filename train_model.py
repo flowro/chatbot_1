@@ -1,3 +1,6 @@
+#TypeError: vars() argument must have __dict__ attribute
+
+
 #Step 1: Preprocessing the Data
 
 import pandas as pd
