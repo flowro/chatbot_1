@@ -1,3 +1,50 @@
+import pandas as pd
+from docx import Document
+import docx2txt
+
+def dataframe_to_table(df, doc_path, placeholder):
+    # Convert the Word document to text.
+    text = docx2txt.process(doc_path)
+
+    # Split the text where the placeholder is.
+    text_parts = text.split(placeholder)
+
+    # Load the first part into a docx.Document.
+    doc1 = Document()
+    doc1.add_paragraph(text_parts[0])
+
+    # Create a table in Document for dataframe
+    table = doc1.add_table(df.shape[0]+1, df.shape[1])
+
+    # add the header rows.
+    for j in range(df.shape[-1]):
+        table.cell(0,j).text = df.columns[j]
+
+    # add the rest of the data frame
+    for i in range(df.shape[0]):
+        for j in range(df.shape[-1]):
+            table.cell(i+1,j).text = str(df.values[i,j])
+
+    # Save the first part of the document.
+    doc1.save("part1.docx")
+
+    # Load the second part into a docx.Document.
+    doc2 = Document()
+    doc2.add_paragraph(text_parts[1])
+    # Save the second part of the document.
+    doc2.save("part2.docx")
+
+    # Now you have two Word documents: part1.docx, part2.docx.
+    # part1.docx ends where you want to insert your table, and part2.docx starts after your table.
+    # You need to manually combine these documents and the table in Word, as Python-docx does not support merging or inserting documents.
+
+
+
+
+
+
+
+
 import os
 import re
 
