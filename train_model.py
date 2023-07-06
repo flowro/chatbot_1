@@ -1,3 +1,23 @@
+model = BartForConditionalGeneration.from_pretrained("./results")
+tokenizer = BartTokenizer.from_pretrained("facebook/bart-large")
+
+# Example text
+text = "Replace this with the text you want to summarize"
+
+inputs = tokenizer(text, truncation=True, max_length=512, return_tensors="pt")
+summary_ids = model.generate(inputs["input_ids"])
+
+summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+print(summary)
+
+
+
+
+
+
+
+
 #TypeError: vars() argument must have __dict__ attribute
 
 
