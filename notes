@@ -1,3 +1,47 @@
+from docx import Document
+import pandas as pd
+
+def dataframe_to_table(df, doc_path, placeholder):
+    # Load existing document
+    doc = Document(doc_path)
+    
+    # Prepare data for table
+    data = [df.columns.tolist()] + df.values.tolist()
+
+    # Iterate through each paragraph in the document
+    for i, para in enumerate(doc.paragraphs):
+        # If the placeholder is in the paragraph
+        if placeholder in para.text:
+            # Create a table
+            table = doc.add_table(rows=1, cols=len(data[0]))
+            
+            # Style the table (optional) - styles may vary depending on the Word version
+            # table.style = 'Table Grid'
+
+            # Add data to the table
+            for row_data in data:
+                cells = table.add_row().cells
+                for j, val in enumerate(row_data):
+                    cells[j].text = str(val)
+            
+            # Add the table to the document
+            para.insert_paragraph_before(table)
+
+            # Remove the placeholder text
+            para.clear()
+            para.add_run()
+
+    # Save the document
+    doc.save(doc_path)
+
+# Sample DataFrame
+df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+
+# Use function
+dataframe_to_table(df, 'document.docx', '##TABLE_PLACEHOLDER##')
+
+
+
 import pandas as pd
 from docx import Document
 import docx2txt
