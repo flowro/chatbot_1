@@ -27,17 +27,21 @@ labels = tokenizer(summaries, truncation=True, max_length=128, padding="max_leng
 from torch.utils.data import Dataset
 
 class SummaryDataset(Dataset):
-    def __init__(self, inputs, labels):
-        self.inputs = inputs
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
         self.labels = labels
 
-    def __len__(self):
-        return len(self.inputs["input_ids"])
-
     def __getitem__(self, idx):
-        return {key: tensor[idx] for key, tensor in self.inputs.items()}, self.labels["input_ids"][idx]
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels["input_ids"][idx])
+        return item
 
+    def __len__(self):
+        return len(self.encodings.input_ids)
+
+# Now you can use this dataset class for your trainer
 dataset = SummaryDataset(inputs, labels)
+
 
 #Step 4: Creating the Model
 
