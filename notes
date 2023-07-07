@@ -1,3 +1,20 @@
+# Suppose summary[0] is the summary text from BART
+import re
+
+# This splits the summary into sentences using regex
+sentences = re.split('(?<=[.!?]) +', summary[0])
+
+n = 3  # number of sentences per paragraph
+
+# This groups the sentences into paragraphs, with n sentences each
+paragraphs = [sentences[i:i+n] for i in range(0, len(sentences), n)]
+
+# This joins each group of sentences into a single string (a paragraph)
+# and then joins the paragraphs with two newline characters to create breaks
+summary_with_breaks = '\n\n'.join([' '.join(paragraph) for paragraph in paragraphs])
+
+print(summary_with_breaks)
+
 from docx import Document
 import pandas as pd
 
